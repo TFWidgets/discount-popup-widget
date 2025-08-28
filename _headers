@@ -1,1 +1,14 @@
 
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
+  Cache-Control: public, max-age=3600
+
+/configs/*
+  Content-Type: application/json
+  Cache-Control: public, max-age=300
+
+/embed.js
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=86400
