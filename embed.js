@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    // Глобальный объект виджета
+    // Global widget object
     window.ExitIntentWidget = {
         config: {},
         isShown: false,
@@ -12,7 +12,7 @@
             conversions: 0
         },
 
-        // Инициализация
+        // Initialization
         init: function(customConfig) {
             const script = document.querySelector('script[data-config]');
             const configPath = script ? script.getAttribute('data-config') : null;
@@ -25,7 +25,7 @@
             }
         },
 
-        // Загрузка конфигурации
+        // Load configuration
         loadConfig: function(path) {
             fetch(path)
                 .then(response => response.json())
@@ -36,7 +36,7 @@
                 .catch(error => console.error('Error loading config:', error));
         },
 
-        // Настройка виджета
+        // Setup widget
         setup: function() {
             this.createPopup();
             this.bindEvents();
@@ -54,7 +54,7 @@
             }
         },
 
-        // Создание popup
+        // Create popup
         createPopup: function() {
             const popup = document.createElement('div');
             popup.id = 'exit-intent-popup';
@@ -67,15 +67,15 @@
                     <h2>${this.config.title}</h2>
                     <p>${this.config.message}</p>
                     <div class="coupon-code">
-                        <span>couponCode:</span>
+                        <span>Promo Code:</span>
                         <strong>${this.config.couponCode}</strong>
                     </div>
                     <div class="popup-buttons">
                         <button class="btn-primary" onclick="ExitIntentWidget.handleConversion()">
-                            Получить скидку
+                            Get Discount
                         </button>
                         <button class="btn-secondary" onclick="ExitIntentWidget.hide()">
-                            Нет, спасибо
+                            No, thanks
                         </button>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
             this.addStyles();
         },
 
-        // Добавление стилей
+        // Add styles
         addStyles: function() {
             if (document.getElementById('exit-intent-styles')) return;
             
@@ -250,7 +250,7 @@
             });
         },
 
-        // Показать popup
+        // Show popup
         show: function() {
             if (this.isShown) return;
             
@@ -267,7 +267,7 @@
             }
         },
 
-        // Скрыть popup
+        // Hide popup
         hide: function() {
             const popup = document.getElementById('exit-intent-popup');
             if (popup) {
@@ -277,7 +277,7 @@
             }
         },
 
-        // Обработка конверсии
+        // Handle conversion
         handleConversion: function() {
             this.stats.clicks++;
             this.stats.conversions++;
@@ -285,12 +285,12 @@
             this.hide();
             
             if (this.config.analytics) {
-                // Отправка аналитики
+                // Send analytics
                 console.log('Conversion tracked:', this.stats);
             }
         },
 
-        // Привязка событий
+        // Bind events
         bindEvents: function() {
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && this.isShown) {
@@ -299,7 +299,7 @@
             });
         },
 
-        // Система событий
+        // Event system
         on: function(event, callback) {
             if (!this.listeners[event]) {
                 this.listeners[event] = [];
@@ -314,7 +314,7 @@
         }
     };
 
-    // Автоинициализация при загрузке страницы
+    // Auto init on page load
     document.addEventListener('DOMContentLoaded', function() {
         ExitIntentWidget.init();
     });
