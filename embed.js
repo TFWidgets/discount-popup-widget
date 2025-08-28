@@ -67,7 +67,7 @@
                     <h2>${this.config.title}</h2>
                     <p>${this.config.message}</p>
                     <div class="coupon-code">
-                        <span>Промокод:</span>
+                        <span>couponCode:</span>
                         <strong>${this.config.couponCode}</strong>
                     </div>
                     <div class="popup-buttons">
