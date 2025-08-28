@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -73,3 +72,90 @@
         }
     </style>
 </head>
+<body>
+    <div class="container">
+        <h1>🎯 Exit Intent Popup Widget</h1>
+        <p>JavaScript виджет для удержания посетителей</p>
+        
+        <div class="demo-controls">
+            <h3>🎮 Демонстрация</h3>
+            <h4>Попробуйте триггеры:</h4>
+            <button class="btn" onclick="ExitIntentWidget.show()">📱 Показать popup</button>
+            <p><strong>🚪 Включить Exit Intent:</strong> Наведите курсор на верхнюю границу браузера</p>
+            <p><strong>↕️ Триггер по скроллу:</strong> Прокрутите страницу на 70%</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="shows">0</div>
+                <div>Показы popup:</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="clicks">0</div>
+                <div>Клики "Получить скидку":</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="conversion">0%</div>
+                <div>Конверсия:</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2>📋 Структура проекта</h2>
+            <pre>
+exit-intent-popup-widget/
+├── configs/
+│   ├── demo.json       # Демо конфигурация
+│   ├── client123.json  # Конфигурация клиента 1
+│   └── client456.json  # Конфигурация клиента 2
+├── embed.js            # Основной скрипт виджета
+├── index.html          # Демо страница
+├── README.md           # Документация
+└── _headers            # Заголовки для Netlify
+            </pre>
+            
+            <h2>⚙️ Использование</h2>
+            <h3>Базовая интеграция</h3>
+            <pre>&lt;!-- Подключение виджета --&gt;
+&lt;script src="embed.js" data-config="configs/demo.json"&gt;&lt;/script&gt;</pre>
+            
+            <h3>Программное управление</h3>
+            <pre>// Показать popup
+ExitIntentWidget.show();
+
+// Скрыть popup  
+ExitIntentWidget.hide();
+
+// Настроить события
+ExitIntentWidget.on('show', function() { 
+    console.log('Popup показан'); 
+});
+
+ExitIntentWidget.on('conversion', function() { 
+    console.log('Конверсия!'); 
+});</pre>
+        </div>
+    </div>
+
+    <!-- Подключение виджета -->
+    <script src="embed.js" data-config="configs/demo.json"></script>
+    
+    <!-- Обновление статистики -->
+    <script>
+        function updateStats() {
+            const stats = ExitIntentWidget.stats;
+            document.getElementById('shows').textContent = stats.shows;
+            document.getElementById('clicks').textContent = stats.clicks;
+            const conversion = stats.shows > 0 ? Math.round((stats.conversions / stats.shows) * 100) : 0;
+            document.getElementById('conversion').textContent = conversion + '%';
+        }
+        
+        // Обновляем статистику при событиях
+        ExitIntentWidget.on('show', updateStats);
+        ExitIntentWidget.on('conversion', updateStats);
+        
+        // Обновляем каждую секунду
+        setInterval(updateStats, 1000);
+    </script>
+</body>
+</html>
