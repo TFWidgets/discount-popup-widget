@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popup Widget</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     </style>
 </head>
 <body>
-    <!-- Подключение виджета -->
+    <!-- ✅ OPTION 1: Using JSON config (recommended) -->
     <script src="embed.js" data-config="configs/demo.json"></script>
-    
-    <!-- Автопоказ popup через 2 секунды -->
-    <script>
+
+    <!-- ✅ OPTION 2: Using data-attributes (quick setup) -->
+    <!-- <script src="embed.js"
+      data-title="Special Offer!"
+      data-message="15% discount only today"
+      data-coupon-code="TODAY15"
+      data-show-on-exit="true"
+      data-show-on-scroll="70"
+      data-frequency="24h"
+      data-primary-color="#ff6b6b"
+      data-background-color="#ffffff"
+      data-text-color="#333333">
+    </script> -->
+
+    <!-- ✅ OPTION 3: Using widget ID (for widget builder) -->
+    <!-- <script src="embed.js" data-widget-id="w_1234567890_abc123"></script> -->
+
+    <!-- ❌ REMOVE this block if you don’t want auto-show -->
+    <!-- <script>
         setTimeout(() => {
             ExitIntentWidget.show();
         }, 2000);
-    </script>
+    </script> -->
 </body>
 </html>
