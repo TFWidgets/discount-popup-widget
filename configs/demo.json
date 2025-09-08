@@ -3,10 +3,25 @@
   "message": "Get 20% off your first purchase",
   "couponCode": "SAVE20",
   "theme": "modern",
-  "triggerDelay": 5000,
+  "animation": "fadeIn",
+  "icon": "🎁",
+  "buttonText": "Get discount",
+  "dismissText": "No, thanks",
+  "triggerDelay": 2000,
   "showOnExit": true,
   "showOnScroll": 70,
-  "animation": "fadeIn",
   "closeTimeout": 0,
-  "analytics": true
+  "frequency": "session",
+  "analytics": true,
+  "colors": {
+    "primary": "#8b5cf6",
+    "secondary": "#e5e7eb",
+    "text": "#333333",
+    "background": "#ffffff",
+    "overlay": "rgba(0,0,0,0.5)",
+    "couponBg": "#fff3cd",
+    "couponBorder": "#ffc107",
+    "couponText": "#856404"
+  },
+  "logo": ""
 }
