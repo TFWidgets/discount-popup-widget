@@ -1,38 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popup Widget</title>
+    <title>Discount Popup Widget - Demo</title>
     <style>
-        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 3.2em;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .section {
+            max-width: 700px;
+            margin: 0 auto 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            margin: 0 0 20px 0;
+            color: #1a202c;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+        
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+            user-select: all;
+            transition: all 0.2s ease;
+        }
+        
+        .code-example:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102,126,234,0.3);
+        }
+        
+        .code-example.copied {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16,185,129,0.3);
+        }
+        
+        .demo-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .section {
+                margin: 0 auto 40px auto;
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2.4em;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- ✅ OPTION 1: Using JSON config (recommended) -->
-    <script src="embed.js" data-config="configs/demo.json"></script>
+    <div class="header">
+        <h1>🎁 Discount Popup Widget</h1>
+    </div>
 
-    <!-- ✅ OPTION 2: Using data-attributes (quick setup) -->
-    <!-- <script src="embed.js"
-      data-title="Special Offer!"
-      data-message="15% discount only today"
-      data-coupon-code="TODAY15"
-      data-show-on-exit="true"
-      data-show-on-scroll="70"
-      data-frequency="24h"
-      data-primary-color="#ff6b6b"
-      data-background-color="#ffffff"
-      data-text-color="#333333">
-    </script> -->
+    <!-- Demo Popup -->
+    <div class="section">
+        <h2>🎉 Demo Popup</h2>
+        
+        <div class="code-example" onclick="copyCode(this)">
+&lt;script src="https://discount-popup-widget.tf-widgets.com/embed.js" data-id="demo"&gt;&lt;/script&gt;
+        </div>
+        
+        <button class="demo-button" onclick="showPopup('demo')">Show Demo Popup</button>
+        
+        <script src="./embed.js?v=55" data-id="demo"></script>
+    </div>
 
-    <!-- ✅ OPTION 3: Using widget ID (for widget builder) -->
-    <!-- <script src="embed.js" data-widget-id="w_1234567890_abc123"></script> -->
+    <!-- Client Popup -->
+    <div class="section">
+        <h2>🏢 Client Popup</h2>
+        
+        <div class="code-example" onclick="copyCode(this)">
+&lt;script src="https://discount-popup-widget.tf-widgets.com/embed.js" data-id="client123"&gt;&lt;/script&gt;
+        </div>
+        
+        <button class="demo-button" onclick="showPopup('client123')">Show Client Popup</button>
+        
+        <script src="./embed.js?v=55" data-id="client123"></script>
+    </div>
 
-    <!-- ❌ REMOVE this block if you don’t want auto-show -->
-    <!-- <script>
-        setTimeout(() => {
-            ExitIntentWidget.show();
-        }, 2000);
-    </script> -->
+    <script>
+        function copyCode(element) {
+            const text = element.textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        function showPopup(id) {
+            if (window.DiscountPopups && window.DiscountPopups[id]) {
+                window.DiscountPopups[id].show();
+            }
+        }
+    </script>
 </body>
 </html>
