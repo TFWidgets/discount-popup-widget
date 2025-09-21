@@ -1,393 +1,530 @@
-(function() {
-    'use strict';
+(() => {
+  'use strict';
 
-const DEFAULTS = {
+  const scripts = Array.from(document.querySelectorAll('script[src*="embed.js"]'));
+  if (!scripts.length) return;
+
+  // Красивый дефолт с минимальными настройками
+  const defaultConfig = {
     title: "Don't leave!",
     message: "Get 20% off your first purchase",
     couponCode: "SAVE20",
-    theme: "modern",
-    animation: "fadeIn",
     icon: "🎁",
-    buttonText: "Get Discount",
+    buttonText: "Get discount",
     dismissText: "No, thanks",
-    showOnExit: true,
     triggerDelay: 0,
+    showOnExit: false,
     showOnScroll: 0,
-    closeTimeout: 0,
-    frequency: "session", // 'always' | 'session' | '24h' | '3d'
-    analytics: true,
-    colors: {
-        primary: "#8b5cf6",
-        secondary: "#e5e7eb",
-        text: "#333333",
-        background: "#ffffff",
-        overlay: "rgba(0,0,0,0.5)",
-        couponBg: "#fff3cd",
-        couponBorder: "#ffc107",
-        couponText: "#856404"
+    frequency: "session",
+    theme: {
+      primary: "#8b5cf6",
+      secondary: "#6d28d9",
+      background: "#ffffff",
+      text: "#333333",
+      overlay: "rgba(15,23,42,0.6)",
+      couponBg: "#fff3cd",
+      couponBorder: "#f59e0b",
+      couponText: "#7c2d12",
+      borderRadius: 18
     },
-    logo: ""
-};
+    fontFamily: "'Inter', system-ui, sans-serif"
+  };
 
+  // Глобальный объект для демо-кнопок
+  window.DiscountPopups = window.DiscountPopups || {};
 
+  scripts.forEach(async (script) => {
+    if (script.dataset.dpwMounted === '1') return;
+    script.dataset.dpwMounted = '1';
 
-    // Global widget object
-    window.ExitIntentWidget = {
-        config: {},
-        isShown: false,
-        listeners: {},
-        stats: {
-            shows: 0,
-            clicks: 0,
-            conversions: 0
-        },
+    const id = (script.dataset.id || 'demo').replace(/\.(json|js)$/, '');
+    const basePath = getBasePath(script.src);
+    const cfg = await loadConfig(id, basePath);
 
-        // Initialization
-        init: function(customConfig) {
-    const script = document.currentScript || document.querySelector('script[src*="embed.js"]');
-    const configPath = script ? script.getAttribute('data-config') : null;
-    const widgetId = script ? script.getAttribute('data-widget-id') : null;
+    mountWidget(script, cfg, id);
+  });
 
-    if (customConfig) {
-        this.config = this.validateAndMerge(customConfig);
-        this.setup();
-        return;
+  function mountWidget(host, cfg, id) {
+    const config = mergeDeep(defaultConfig, cfg || {});
+    
+    // Поддержка старого формата colors
+    if (cfg && cfg.colors) {
+      config.theme.primary = cfg.colors.primary || config.theme.primary;
+      config.theme.secondary = cfg.colors.secondary || config.theme.secondary;
+      config.theme.background = cfg.colors.background || config.theme.background;
+      config.theme.text = cfg.colors.text || config.theme.text;
+      config.theme.overlay = cfg.colors.overlay || config.theme.overlay;
+      config.theme.couponBg = cfg.colors.couponBg || config.theme.couponBg;
+      config.theme.couponBorder = cfg.colors.couponBorder || config.theme.couponBorder;
+      config.theme.couponText = cfg.colors.couponText || config.theme.couponText;
     }
-    
-    if (configPath) {
-        this.loadConfig(configPath);
-        return;
-    }
-    
-    if (widgetId) {
-        this.loadConfig(`https://discount.tf-widgets.com/api/config/${widgetId}`);
-        return;
-    }
-    
-    // Fallback: собираем из data-* атрибутов
-    this.config = this.validateAndMerge(this.parseDataAttributes(script));
-    this.setup();
-},
 
-parseDataAttributes: function(script) {
-    if (!script) return {};
-    const d = script.dataset;
+    const uniqueClass = `dpw-${id}-${Date.now()}`;
+    const widget = createPopupWidget(config, uniqueClass, id);
     
-    return {
-        title: d.title,
-        message: d.message,
-        couponCode: d.couponCode,
-        theme: d.theme,
-        animation: d.animation,
-        icon: d.icon,
-        buttonText: d.buttonText,
-        dismissText: d.dismissText,
-        showOnExit: d.showOnExit === 'true',
-        triggerDelay: parseInt(d.triggerDelay) || 0,
-        showOnScroll: parseInt(d.showOnScroll) || 0,
-        closeTimeout: parseInt(d.closeTimeout) || 0,
-        frequency: d.frequency,
-        logo: d.logo,
-        colors: {
-            primary: d.primaryColor,
-            secondary: d.secondaryColor,
-            text: d.textColor,
-            background: d.backgroundColor,
-            overlay: d.overlayColor,
-            couponBg: d.couponBg,
-            couponBorder: d.couponBorder,
-            couponText: d.couponText
-        }
-    };
-},
+    // Сохраняем для демо-кнопок
+    window.DiscountPopups[id] = widget;
 
-validateAndMerge: function(config) {
-    const merged = JSON.parse(JSON.stringify(DEFAULTS));
-    
-    function mergeDeep(target, source) {
-        Object.keys(source || {}).forEach(key => {
-            const value = source[key];
-            if (value == null) return;
-            
-            if (typeof target[key] === 'object' && !Array.isArray(target[key])) {
-                mergeDeep(target[key], value);
-            } else {
-                // Санитизация строк
-                if (typeof value === 'string') {
-                    target[key] = value.substring(0, 300).replace(/<[^>]*>/g, '');
-                } else {
-                    target[key] = value;
-                }
-            }
-        });
-    }
-    
-    mergeDeep(merged, config);
-    
-    // Валидация числовых значений
-    merged.triggerDelay = Math.max(0, Math.min(600000, merged.triggerDelay));
-    merged.showOnScroll = Math.max(0, Math.min(100, merged.showOnScroll));
-    merged.closeTimeout = Math.max(0, Math.min(600000, merged.closeTimeout));
-    
-    if (!['always', 'session', '24h', '3d'].includes(merged.frequency)) {
-        merged.frequency = 'session';
-    }
-    
-    return merged;
-},
+    // Настраиваем триггеры
+    setupTriggers(widget, config);
+  }
 
-shouldShowByFrequency: function() {
-    const key = 'exitWidget:lastShown';
-    
-    if (this.config.frequency === 'always') return true;
-    
-    if (this.config.frequency === 'session') {
-        return !sessionStorage.getItem('exitWidget:shown');
-    }
-    
-    const lastShown = parseInt(localStorage.getItem(key)) || 0;
-    const now = Date.now();
-    const intervals = { '24h': 24 * 60 * 60 * 1000, '3d': 3 * 24 * 60 * 60 * 1000 };
-    
-    return (now - lastShown) > (intervals[this.config.frequency] || 0);
-},
+  function createPopupWidget(config, uniqueClass, id) {
+    // Создаем оверлей
+    const overlay = document.createElement('div');
+    overlay.className = `dpw-overlay ${uniqueClass}`;
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(overlay);
 
-        // Load configuration
-        loadConfig: function(path) {
-    fetch(path)
-        .then(response => response.json())
-        .then(config => {
-            this.config = this.validateAndMerge(config); 
-            this.setup();
-        })
-        .catch(error => console.error('Error loading config:', error));
-},
+    // Генерируем стили
+    const style = document.createElement('style');
+    style.textContent = generateStyles(config, uniqueClass);
+    document.head.appendChild(style);
 
-        // Setup widget
-        setup: function() {
-            this.createPopup();
-            this.bindEvents();
-            
-            if (this.config.showOnExit) {
-                this.setupExitIntent();
-            }
-            
-            if (this.config.triggerDelay) {
-                setTimeout(() => this.show(), this.config.triggerDelay);
-            }
-            
-            if (this.config.showOnScroll) {
-                this.setupScrollTrigger();
-            }
-        },
-
-        // Create popup
-        
-createPopup: function() {
-    const popup = document.createElement('div');
-    popup.id = 'exit-intent-popup';
-    popup.className = `popup-overlay ${this.config.theme || 'modern'}`;
-    
-    const logoHtml = this.config.logo ? 
-        `<img src="${this.config.logo}" alt="Logo" class="popup-logo">` : '';
-    
-    popup.innerHTML = `
-        <div class="popup-content ${this.config.animation || 'fadeIn'}">
-            <button class="popup-close" onclick="ExitIntentWidget.hide()">&times;</button>
-            ${logoHtml}
-            <div class="popup-icon">${this.config.icon}</div>
-            <h2>${this.config.title}</h2>
-            <p>${this.config.message}</p>
-            <div class="coupon-code">
-                <span>Promo Code:</span>
-                <strong>${this.config.couponCode}</strong>
-            </div>
-            <div class="popup-buttons">
-                <button class="btn-primary" onclick="ExitIntentWidget.handleConversion()">
-                    ${this.config.buttonText}
-                </button>
-                <button class="btn-secondary" onclick="ExitIntentWidget.hide()">
-                    ${this.config.dismissText}
-                </button>
-            </div>
+    // HTML структура с градиентной лентой
+    overlay.innerHTML = `
+      <div class="dpw-card" role="dialog" aria-modal="true">
+        <div class="dpw-ribbon"></div>
+        <div class="dpw-content">
+          <button class="dpw-close" aria-label="Close">×</button>
+          ${config.logo ? `<img class="dpw-logo" src="${escapeAttr(config.logo)}" alt="Logo">` : ''}
+          <div class="dpw-icon">${escapeHtml(config.icon)}</div>
+          <h2 class="dpw-title">${escapeHtml(config.title)}</h2>
+          <p class="dpw-message">${escapeHtml(config.message)}</p>
+          
+          <div class="dpw-coupon" tabindex="0" role="button" aria-label="Copy coupon code">
+            <span class="dpw-coupon-label">Promo Code:</span>
+            <strong class="dpw-coupon-code">${escapeHtml(config.couponCode)}</strong>
+            <span class="dpw-copy-hint">Click to copy</span>
+          </div>
+          
+          <div class="dpw-buttons">
+            <button class="dpw-btn-primary" type="button">
+              ${escapeHtml(config.buttonText)}
+            </button>
+            <button class="dpw-btn-secondary" type="button">
+              ${escapeHtml(config.dismissText)}
+            </button>
+          </div>
         </div>
+      </div>
     `;
-    document.body.appendChild(popup);
-    this.addStyles();
-},
 
-
-        // Add styles
-
-addStyles: function() {
-    if (document.getElementById('exit-intent-styles')) return;
-    
-    const styles = document.createElement('style');
-    styles.id = 'exit-intent-styles';
-    
-    // CSS-переменные из конфига
-    const c = this.config.colors;
-    const cssVars = `
-        :root {
-            --eiw-primary: ${c.primary};
-            --eiw-secondary: ${c.secondary};
-            --eiw-text: ${c.text};
-            --eiw-bg: ${c.background};
-            --eiw-overlay: ${c.overlay};
-            --eiw-coupon-bg: ${c.couponBg};
-            --eiw-coupon-border: ${c.couponBorder};
-            --eiw-coupon-text: ${c.couponText};
-        }
-    `;
-    
-    styles.textContent = cssVars + `
-        .popup-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--eiw-overlay); display: none; justify-content: center; align-items: center;
-            z-index: 10000; backdrop-filter: blur(5px);
-        }
-        .popup-overlay.show { display: flex; }
-        .popup-content {
-            background: var(--eiw-bg); color: var(--eiw-text);
-            padding: 30px; border-radius: 15px; text-align: center;
-            max-width: 400px; width: 90%; position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        .popup-logo { 
-            max-width: 120px; max-height: 40px; 
-            margin: 0 auto 15px; display: block; 
-        }
-        .popup-close { 
-            position: absolute; top: 10px; right: 15px; 
-            background: none; border: none; font-size: 24px; 
-            cursor: pointer; color: #999; 
-        }
-        .popup-icon { font-size: 48px; margin-bottom: 15px; }
-        .popup-content h2 { color: var(--eiw-text); margin-bottom: 15px; font-size: 24px; }
-        .popup-content p { color: var(--eiw-text); margin-bottom: 20px; font-size: 16px; opacity: 0.8; }
-        .coupon-code {
-            background: var(--eiw-coupon-bg); border: 2px dashed var(--eiw-coupon-border);
-            padding: 15px; margin: 20px 0; border-radius: 8px;
-        }
-        .coupon-code strong { color: var(--eiw-coupon-text); font-size: 18px; font-weight: bold; }
-        .popup-buttons { display: flex; gap: 10px; flex-direction: column; }
-        .btn-primary {
-            background: var(--eiw-primary); color: white; border: none;
-            padding: 12px 24px; border-radius: 8px; cursor: pointer;
-            font-size: 16px; font-weight: bold; transition: all 0.3s;
-        }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-secondary {
-            background: var(--eiw-secondary); color: var(--eiw-text);
-            border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;
-        }
-        .fadeIn { animation: fadeIn 0.5s ease-out; }
-        .slideUp { animation: slideUp 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 480px) { .popup-content { margin: 20px; padding: 20px; } }
-    `;
-    
-    document.head.appendChild(styles);
-},
-
-
-        // Exit Intent
-        setupExitIntent: function() {
-            let hasTriggered = false;
-            
-            document.addEventListener('mouseleave', (e) => {
-                if (e.clientY <= 0 && !hasTriggered && !this.isShown) {
-                    this.show();
-                    hasTriggered = true;
-                }
-            });
-        },
-
-        // Scroll Trigger
-        setupScrollTrigger: function() {
-            let hasTriggered = false;
-            
-            window.addEventListener('scroll', () => {
-                const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-                
-                if (scrollPercent >= this.config.showOnScroll && !hasTriggered && !this.isShown) {
-                    this.show();
-                    hasTriggered = true;
-                }
-            });
-        },
-
-        // Show popup
-show: function() {
-    if (this.isShown || !this.shouldShowByFrequency()) return;
-    
-    const popup = document.getElementById('exit-intent-popup');
-    if (popup) {
-        popup.classList.add('show');
+    const widget = {
+      overlay,
+      config,
+      id,
+      isShown: false,
+      
+      show() {
+        if (this.isShown || !shouldShowByFrequency(this.config.frequency, this.id)) return;
+        
+        this.overlay.style.display = 'flex';
+        setTimeout(() => this.overlay.classList.add('show'), 10);
+        this.overlay.setAttribute('aria-hidden', 'false');
+        
         this.isShown = true;
-        this.stats.shows++;
-        this.trigger('show');
+        markAsShown(this.config.frequency, this.id);
+      },
+      
+      hide() {
+        if (!this.isShown) return;
         
-        // Сохраняем время показа
-        localStorage.setItem('exitWidget:lastShown', Date.now().toString());
-        sessionStorage.setItem('exitWidget:shown', '1');
+        this.overlay.classList.remove('show');
+        setTimeout(() => this.overlay.style.display = 'none', 300);
+        this.overlay.setAttribute('aria-hidden', 'true');
         
-        if (this.config.closeTimeout > 0) {
-            setTimeout(() => this.hide(), this.config.closeTimeout);
-        }
-    }
-},
-
-        // Hide popup
-        hide: function() {
-            const popup = document.getElementById('exit-intent-popup');
-            if (popup) {
-                popup.classList.remove('show');
-                this.isShown = false;
-                this.trigger('hide');
-            }
-        },
-
-        // Handle conversion
-        handleConversion: function() {
-            this.stats.clicks++;
-            this.stats.conversions++;
-            this.trigger('conversion');
-            this.hide();
-            
-            if (this.config.analytics) {
-                // Send analytics
-                console.log('Conversion tracked:', this.stats);
-            }
-        },
-
-        // Bind events
-        bindEvents: function() {
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && this.isShown) {
-                    this.hide();
-                }
-            });
-        },
-
-        // Event system
-        on: function(event, callback) {
-            if (!this.listeners[event]) {
-                this.listeners[event] = [];
-            }
-            this.listeners[event].push(callback);
-        },
-
-        trigger: function(event, data) {
-            if (this.listeners[event]) {
-                this.listeners[event].forEach(callback => callback(data));
-            }
-        }
+        this.isShown = false;
+      },
+      
+      copyCoupon() {
+        const code = this.config.couponCode || '';
+        const btn = this.overlay.querySelector('.dpw-btn-primary');
+        const coupon = this.overlay.querySelector('.dpw-coupon');
+        
+        navigator.clipboard.writeText(code).then(() => {
+          btn.textContent = 'Copied!';
+          coupon.classList.add('copied');
+          
+          setTimeout(() => {
+            btn.textContent = this.config.buttonText;
+            coupon.classList.remove('copied');
+          }, 1500);
+        }).catch(() => {
+          // Fallback для старых браузеров
+          const textArea = document.createElement('textarea');
+          textArea.value = code;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+        });
+      }
     };
 
-    // Auto init on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        ExitIntentWidget.init();
+    // Обработчики событий
+    setupEventHandlers(widget);
+    
+    return widget;
+  }
+
+  function generateStyles(config, uniqueClass) {
+    const t = config.theme;
+    const gradient = `linear-gradient(135deg, ${t.primary} 0%, ${t.secondary} 100%)`;
+    
+    return `
+      .${uniqueClass}.dpw-overlay {
+        position: fixed;
+        inset: 0;
+        background: ${t.overlay};
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        backdrop-filter: blur(8px);
+        font-family: ${config.fontFamily};
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .${uniqueClass}.dpw-overlay.show {
+        opacity: 1;
+      }
+      
+      .${uniqueClass} .dpw-card {
+        width: min(92vw, 480px);
+        background: ${t.background};
+        border-radius: ${t.borderRadius}px;
+        box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+        position: relative;
+        overflow: hidden;
+        transform: scale(0.8) translateY(20px);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      
+      .${uniqueClass}.show .dpw-card {
+        transform: scale(1) translateY(0);
+      }
+      
+      .${uniqueClass} .dpw-ribbon {
+        height: 100px;
+        background: ${gradient};
+        position: relative;
+      }
+      
+      .${uniqueClass} .dpw-ribbon::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 25% 20%, rgba(255,255,255,0.2) 0%, transparent 60%);
+      }
+      
+      .${uniqueClass} .dpw-content {
+        padding: 24px 28px 32px;
+        text-align: center;
+        position: relative;
+        color: ${t.text};
+      }
+      
+      .${uniqueClass} .dpw-close {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: rgba(0,0,0,0.1);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: ${t.text};
+        font-size: 18px;
+        transition: all 0.2s ease;
+      }
+      
+      .${uniqueClass} .dpw-close:hover {
+        background: rgba(0,0,0,0.15);
+        transform: scale(1.1);
+      }
+      
+      .${uniqueClass} .dpw-icon {
+        position: absolute;
+        top: -36px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        width: 68px;
+        height: 68px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        border: 3px solid rgba(255,255,255,0.8);
+        animation: dpw-bounce-${uniqueClass} 2.5s ease-in-out infinite;
+      }
+      
+      .${uniqueClass} .dpw-title {
+        margin: 24px 0 8px 0;
+        font-size: 1.6em;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+      }
+      
+      .${uniqueClass} .dpw-message {
+        margin: 0 0 20px 0;
+        font-size: 1.05em;
+        opacity: 0.85;
+        line-height: 1.4;
+      }
+      
+      .${uniqueClass} .dpw-coupon {
+        background: ${t.couponBg};
+        border: 2px dashed ${t.couponBorder};
+        padding: 16px;
+        margin: 20px 0 24px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      
+      .${uniqueClass} .dpw-coupon:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .${uniqueClass} .dpw-coupon.copied {
+        background: #d1fae5;
+        border-color: #10b981;
+      }
+      
+      .${uniqueClass} .dpw-coupon-label {
+        display: block;
+        font-size: 0.85em;
+        color: ${t.couponText};
+        opacity: 0.8;
+        margin-bottom: 4px;
+      }
+      
+      .${uniqueClass} .dpw-coupon-code {
+        font-size: 1.3em;
+        font-weight: 800;
+        color: ${t.couponText};
+        font-family: 'JetBrains Mono', 'SF Mono', monospace;
+        letter-spacing: 1px;
+      }
+      
+      .${uniqueClass} .dpw-copy-hint {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7em;
+        opacity: 0.6;
+        color: ${t.couponText};
+      }
+      
+      .${uniqueClass} .dpw-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .${uniqueClass} .dpw-btn-primary {
+        background: ${gradient};
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .${uniqueClass} .dpw-btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+      }
+      
+      .${uniqueClass} .dpw-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+      }
+      
+      .${uniqueClass} .dpw-btn-secondary {
+        background: #f1f5f9;
+        color: ${t.text};
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 0.95em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0.8;
+      }
+      
+      .${uniqueClass} .dpw-btn-secondary:hover {
+        opacity: 1;
+        background: #e2e8f0;
+      }
+      
+      .${uniqueClass} .dpw-logo {
+        max-height: 32px;
+        max-width: 140px;
+        margin: 8px auto 0;
+        display: block;
+      }
+      
+      @keyframes dpw-bounce-${uniqueClass} {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(-6px); }
+      }
+      
+      @media (max-width: 480px) {
+        .${uniqueClass} .dpw-content {
+          padding: 20px 24px 28px;
+        }
+        
+        .${uniqueClass} .dpw-title {
+          font-size: 1.4em;
+        }
+        
+        .${uniqueClass} .dpw-message {
+          font-size: 1em;
+        }
+      }
+    `;
+  }
+
+  function setupEventHandlers(widget) {
+    const { overlay } = widget;
+    
+    // Закрытие по клику на оверлей
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) widget.hide();
     });
+    
+    // Кнопка закрытия
+    overlay.querySelector('.dpw-close').addEventListener('click', () => widget.hide());
+    
+    // Кнопка отказа
+    overlay.querySelector('.dpw-btn-secondary').addEventListener('click', () => widget.hide());
+    
+    // Копирование купона
+    overlay.querySelector('.dpw-coupon').addEventListener('click', () => widget.copyCoupon());
+    
+    // Основная кнопка (копирует купон и закрывает)
+    overlay.querySelector('.dpw-btn-primary').addEventListener('click', () => {
+      widget.copyCoupon();
+      setTimeout(() => widget.hide(), 1000);
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && widget.isShown) {
+        widget.hide();
+      }
+    });
+  }
+
+  function setupTriggers(widget, config) {
+    if (config.triggerDelay > 0) {
+      setTimeout(() => widget.show(), config.triggerDelay);
+    }
+
+    if (config.showOnExit) {
+      let hasTriggered = false;
+      document.addEventListener('mouseleave', (e) => {
+        if (e.clientY <= 0 && !hasTriggered && !widget.isShown) {
+          widget.show();
+          hasTriggered = true;
+        }
+      });
+    }
+
+    if (config.showOnScroll > 0) {
+      let hasTriggered = false;
+      window.addEventListener('scroll', () => {
+        const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        
+        if (scrollPercent >= config.showOnScroll && !hasTriggered && !widget.isShown) {
+          widget.show();
+          hasTriggered = true;
+        }
+      });
+    }
+  }
+
+  function shouldShowByFrequency(frequency, id) {
+    if (frequency === 'always') return true;
+    
+    if (frequency === 'session') {
+      return !sessionStorage.getItem(`dpw-shown-${id}`);
+    }
+    
+    const lastShown = parseInt(localStorage.getItem(`dpw-lastShown-${id}`)) || 0;
+    const now = Date.now();
+    const intervals = { 
+      '24h': 24 * 60 * 60 * 1000, 
+      '3d': 3 * 24 * 60 * 60 * 1000 
+    };
+    
+    return (now - lastShown) > (intervals[frequency] || 0);
+  }
+
+  function markAsShown(frequency, id) {
+    if (frequency === 'session') {
+      sessionStorage.setItem(`dpw-shown-${id}`, '1');
+    } else if (frequency !== 'always') {
+      localStorage.setItem(`dpw-lastShown-${id}`, Date.now().toString());
+    }
+  }
+
+  // Вспомогательные функции
+  async function loadConfig(id, basePath) {
+    const url = `${basePath}configs/${id}.json`;
+    try {
+      const r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) return defaultConfig;
+      return await r.json();
+    } catch {
+      return defaultConfig;
+    }
+  }
+
+  function getBasePath(src) {
+    try {
+      const u = new URL(src, location.href);
+      return u.pathname.replace(/\/[^\/]*$/, '/');
+    } catch { return './'; }
+  }
+
+  function mergeDeep(target, source) {
+    const output = { ...target };
+    for (const key in source) {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        output[key] = mergeDeep(target[key] || {}, source[key]);
+      } else {
+        output[key] = source[key];
+      }
+    }
+    return output;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+  }
+
+  function escapeAttr(text) {
+    return String(text || '').replace(/"/g, '&quot;');
+  }
 })();
