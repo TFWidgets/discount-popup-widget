@@ -2,26 +2,23 @@
   "title": "Don't leave!",
   "message": "Get 20% off your first purchase",
   "couponCode": "SAVE20",
-  "theme": "modern",
-  "animation": "fadeIn",
   "icon": "🎁",
   "buttonText": "Get discount",
   "dismissText": "No, thanks",
-  "triggerDelay": 2000,
-  "showOnExit": true,
-  "showOnScroll": 70,
-  "closeTimeout": 0,
+  "triggerDelay": 0,
+  "showOnExit": false,
+  "showOnScroll": 0,
   "frequency": "session",
-  "analytics": true,
-  "colors": {
+  "theme": {
     "primary": "#8b5cf6",
-    "secondary": "#e5e7eb",
-    "text": "#333333",
+    "secondary": "#6d28d9",
     "background": "#ffffff",
-    "overlay": "rgba(0,0,0,0.5)",
+    "text": "#333333",
+    "overlay": "rgba(15,23,42,0.6)",
     "couponBg": "#fff3cd",
-    "couponBorder": "#ffc107",
-    "couponText": "#856404"
+    "couponBorder": "#f59e0b",
+    "couponText": "#7c2d12",
+    "borderRadius": 18
   },
-  "logo": ""
+  "fontFamily": "'Inter', system-ui, sans-serif"
 }
