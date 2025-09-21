@@ -1,0 +1,24 @@
+{
+  "title": "Special Offer!",
+  "message": "Save 30% on your order today only",
+  "couponCode": "SAVE30",
+  "icon": "🔥",
+  "buttonText": "Claim Discount",
+  "dismissText": "Maybe later",
+  "triggerDelay": 0,
+  "showOnExit": false,
+  "showOnScroll": 0,
+  "frequency": "session",
+  "theme": {
+    "primary": "#ef4444",
+    "secondary": "#dc2626",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "overlay": "rgba(0,0,0,0.7)",
+    "couponBg": "#fef3c7",
+    "couponBorder": "#f59e0b",
+    "couponText": "#92400e",
+    "borderRadius": 20
+  },
+  "fontFamily": "'Roboto', sans-serif"
+}
