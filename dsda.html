@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"> <!-- КРИТИЧНО ДЛЯ ЭМОДЗИ! -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Discount Popup Widget - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            margin: 0 0 20px 0;
+            font-size: 3.2em;
+            font-weight: 800;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .demo-section {
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            color: #1a202c;
+        }
+        
+        .demo-section h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+        
+        .style-info {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: 2px solid #4a5568;
+            cursor: pointer;
+            user-select: all;
+            transition: all 0.3s ease;
+        }
+        
+        .code-example:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16,185,129,0.3);
+        }
+        
+        .demo-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .local-demo {
+            max-width: 1000px;
+            margin: 60px auto 0;
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            color: #1a202c;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-grid { grid-template-columns: 1fr; gap: 20px; }
+            .demo-section { padding: 20px; }
+            .header h1 { font-size: 2.4em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎁 Discount Popup Widget</h1>
+        <p>Унифицированная структура конфигов для Shopify Workers</p>
+    </div>
+
+    <div class="demo-grid">
+        <div class="demo-section">
+            <h2>🎉 Demo Popup (demo)</h2>
+            
+            <div class="style-info">
+                <strong>Структура:</strong> Унифицирована - colors, borderRadius, sizes, shadow<br>
+                <strong>Features:</strong> Purple gradient, Inter font, стандартные размеры
+            </div>
+            
+            <div class="code-example" onclick="copyCode(this)">
+&lt;script src="<span class="embed-url">LOADING...</span>/embed.js" data-id="demo"&gt;&lt;/script&gt;
+            </div>
+            
+            <button class="demo-button" onclick="showPopup('demo')">Show Demo Popup</button>
+            <script src="./embed.js" data-id="demo"></script>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔥 Premium Offer (client123)</h2>
+            
+            <div class="style-info">
+                <strong>Структура:</strong> Идентична demo - только значения переменных разные<br>
+                <strong>Features:</strong> Red gradient, Roboto font, увеличенные размеры, fire icon
+            </div>
+            
+            <div class="code-example" onclick="copyCode(this)">
+&lt;script src="<span class="embed-url">LOADING...</span>/embed.js" data-id="client123"&gt;&lt;/script&gt;
+            </div>
+            
+            <button class="demo-button" onclick="showPopup('client123')">Show Premium Popup</button>
+            <script src="./embed.js" data-id="client123"></script>
+        </div>
+    </div>
+
+    <!-- Пример с локальным конфигом -->
+    <div class="local-demo">
+        <h2>🧪 Локальный конфиг (data-id="local")</h2>
+        
+        <div class="style-info">
+            <strong>Features:</strong> Встроенный JSON в HTML, кастомный зеленый стиль, без сетевых запросов
+        </div>
+        
+        <button class="demo-button" onclick="showPopup('local')">Show Local Popup</button>
+        
+        <script id="dpw-local-config" type="application/json">
+        {
+          "title": "Green Friday!",
+          "message": "Eco-friendly products 25% off",
+          "couponCode": "ECO25",
+          "icon": "",
+          "iconHtml": "&#127807;",
+          "buttonText": "Go green",
+          "dismissText": "Not now",
+          "triggerDelay": 0,
+          "showOnExit": false,
+          "showOnScroll": 0,
+          "frequency": "always",
+          "logo": "",
+          "style": {
+            "fontFamily": "'Inter', system-ui, sans-serif",
+            "valueFontFamily": "'JetBrains Mono', 'SF Mono', monospace",
+            "colors": {
+              "background": "#ffffff",
+              "text": "#1f2937",
+              "headerBackground": "linear-gradient(135deg, #059669 0%, #047857 100%)",
+              "overlay": "rgba(15,23,42,0.6)",
+              "blockBackground": "rgba(255,255,255,0.22)",
+              "blockBorder": "rgba(255,255,255,0.35)",
+              "btnPrimary": "linear-gradient(135deg, #059669 0%, #047857 100%)",
+              "btnPrimaryText": "white",
+              "couponBg": "#ecfdf5",
+              "couponBorder": "#10b981",
+              "couponText": "#047857"
+            },
+            "borderRadius": {"widget": 16, "blocks": 12},
+            "sizes": {"fontSize": 1.05, "padding": 26, "iconSize": 70},
+            "shadow": {"widget": "0 25px 70px rgba(5,150,105,0.25)"}
+          }
+        }
+        </script>
+        <script src="./embed.js" data-id="local"></script>
+    </div>
+
+    <script>
+        // Подставляем текущий домен
+        const currentDomain = window.location.origin;
+        document.querySelectorAll('.embed-url').forEach(span => {
+            span.textContent = currentDomain;
+        });
+        
+        function copyCode(element) {
+            const text = element.textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = element.innerHTML;
+                element.style.borderColor = '#10b981';
+                element.innerHTML = '✅ COPIED!';
+                
+                setTimeout(() => {
+                    element.style.borderColor = '#4a5568';
+                    element.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        
+        function showPopup(id) {
+            if (window.DiscountPopups && window.DiscountPopups[id]) {
+                window.DiscountPopups[id].show();
+            }
+        }
+        
+        console.log('🎁 Discount Popup Widget Demo');
+        console.log('📋 Унифицированная структура готова для Shopify Workers');
+    </script>
+</body>
+</html>
