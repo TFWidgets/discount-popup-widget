@@ -1,24 +1,58 @@
 {
-  "title": "Special Offer!",
-  "message": "Save 30% on your order today only",
-  "couponCode": "SAVE30",
-  "icon": "🔥",
-  "buttonText": "Claim Discount",
+  "title": "Exclusive Offer!",
+  "message": "Save 30% on premium products today only",
+  "couponCode": "PREMIUM30",
+  "icon": "",
+  "iconHtml": "&#128293;",
+  "buttonText": "Claim offer",
   "dismissText": "Maybe later",
   "triggerDelay": 0,
   "showOnExit": false,
   "showOnScroll": 0,
   "frequency": "session",
-  "theme": {
-    "primary": "#ef4444",
-    "secondary": "#dc2626",
-    "background": "#ffffff",
-    "text": "#1f2937",
-    "overlay": "rgba(0,0,0,0.7)",
-    "couponBg": "#fef3c7",
-    "couponBorder": "#f59e0b",
-    "couponText": "#92400e",
-    "borderRadius": 20
-  },
-  "fontFamily": "'Roboto', sans-serif"
+  "logo": "",
+  "style": {
+    "fontFamily": "'Roboto', system-ui, sans-serif",
+    "valueFontFamily": "'Roboto', system-ui, sans-serif",
+    "colors": {
+      "background": "#ffffff",
+      "text": "#1f2937",
+      "headerBackground": "linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)",
+      "overlay": "rgba(15,23,42,0.7)",
+      "blockBackground": "rgba(255,255,255,0.25)",
+      "blockBorder": "rgba(255,255,255,0.40)",
+      "blockHover": "rgba(255,255,255,0.35)",
+      "borderHover": "rgba(255,255,255,0.60)",
+      "btnPrimary": "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+      "btnPrimaryText": "white",
+      "btnSecondary": "#f9fafb",
+      "btnSecondaryText": "#374151",
+      "btnSecondaryHover": "#f3f4f6",
+      "couponBg": "#fef3c7",
+      "couponBorder": "#f59e0b",
+      "couponText": "#92400e",
+      "couponCopiedBg": "#d1fae5",
+      "couponCopiedBorder": "#10b981"
+    },
+    "borderRadius": {
+      "widget": 20,
+      "blocks": 14
+    },
+    "sizes": {
+      "fontSize": 1.1,
+      "padding": 28,
+      "blockPadding": 18,
+      "gap": 14,
+      "iconSize": 72,
+      "ribbonHeight": 110
+    },
+    "shadow": {
+      "widget": "0 30px 80px rgba(220,38,38,0.30)",
+      "widgetHover": "0 40px 100px rgba(220,38,38,0.40)",
+      "text": "none",
+      "btnHover": "0 10px 30px rgba(220, 38, 38, 0.4)",
+      "iconShadow": "0 15px 35px rgba(0,0,0,0.3)",
+      "couponHover": "0 6px 18px rgba(0,0,0,0.15)"
+    }
+  }
 }
