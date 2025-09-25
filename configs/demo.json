@@ -2,23 +2,57 @@
   "title": "Don't leave!",
   "message": "Get 20% off your first purchase",
   "couponCode": "SAVE20",
-  "icon": "🎁",
+  "icon": "",
+  "iconHtml": "&#127873;",
   "buttonText": "Get discount",
   "dismissText": "No, thanks",
   "triggerDelay": 0,
   "showOnExit": false,
   "showOnScroll": 0,
   "frequency": "session",
-  "theme": {
-    "primary": "#8b5cf6",
-    "secondary": "#6d28d9",
-    "background": "#ffffff",
-    "text": "#333333",
-    "overlay": "rgba(15,23,42,0.6)",
-    "couponBg": "#fff3cd",
-    "couponBorder": "#f59e0b",
-    "couponText": "#7c2d12",
-    "borderRadius": 18
-  },
-  "fontFamily": "'Inter', system-ui, sans-serif"
+  "logo": "",
+  "style": {
+    "fontFamily": "'Inter', system-ui, sans-serif",
+    "valueFontFamily": "'JetBrains Mono', 'SF Mono', monospace",
+    "colors": {
+      "background": "#ffffff",
+      "text": "#333333",
+      "headerBackground": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+      "overlay": "rgba(15,23,42,0.6)",
+      "blockBackground": "rgba(255,255,255,0.8)",
+      "blockBorder": "rgba(255,255,255,0.8)",
+      "blockHover": "rgba(255,255,255,0.9)",
+      "borderHover": "rgba(255,255,255,1.0)",
+      "btnPrimary": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+      "btnPrimaryText": "white",
+      "btnSecondary": "#f1f5f9",
+      "btnSecondaryText": "#333333",
+      "btnSecondaryHover": "#e2e8f0",
+      "couponBg": "#fff3cd",
+      "couponBorder": "#f59e0b",
+      "couponText": "#7c2d12",
+      "couponCopiedBg": "#d1fae5",
+      "couponCopiedBorder": "#10b981"
+    },
+    "borderRadius": {
+      "widget": 18,
+      "blocks": 12
+    },
+    "sizes": {
+      "fontSize": 1.0,
+      "padding": 24,
+      "blockPadding": 16,
+      "gap": 12,
+      "iconSize": 68,
+      "ribbonHeight": 100
+    },
+    "shadow": {
+      "widget": "0 25px 70px rgba(139,92,246,0.35)",
+      "widgetHover": "0 35px 90px rgba(139,92,246,0.45)",
+      "text": "none",
+      "btnHover": "0 8px 24px rgba(139, 92, 246, 0.4)",
+      "iconShadow": "0 12px 28px rgba(0,0,0,0.25)",
+      "couponHover": "0 4px 12px rgba(0,0,0,0.1)"
+    }
+  }
 }
