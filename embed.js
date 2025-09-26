@@ -259,7 +259,6 @@
         }
     `;
 
-    // Глобальный объект для демо-кнопок
     window.DiscountPopups = window.DiscountPopups || {};
 
     try {
@@ -282,7 +281,6 @@
 
         console.log(`[DiscountPopupWidget] 🚀 Инициализация виджета "${clientId}"`);
 
-        // Добавляем базовые стили один раз в head
         if (!document.querySelector('#discount-popup-widget-styles')) {
             const style = document.createElement('style');
             style.id = 'discount-popup-widget-styles';
@@ -332,7 +330,6 @@
         }
     }
 
-    // УНИФИЦИРОВАННАЯ СТРУКТУРА (точно как у других виджетов)
     function getDefaultConfig() {
         return {
             title: "Don't leave!",
@@ -404,7 +401,7 @@
             }
         }
 
-        // Сливаем объекты второго уровня в style (как у других виджетов)
+        // Сливаем объекты второго уровня в style 
         if (result.style) {
             for (const subKey of ['colors', 'borderRadius', 'sizes', 'shadow']) {
                 if (base.style[subKey] && typeof base.style[subKey] === 'object' && !Array.isArray(base.style[subKey])) {
@@ -465,7 +462,7 @@
     }
 
     function createDiscountPopupWidget(config, uniqueClass, id) {
-        // Создаем оверлей
+        
         const overlay = document.createElement('div');
         overlay.className = `dpw-overlay ${uniqueClass}`;
         overlay.setAttribute('aria-hidden', 'true');
@@ -577,7 +574,7 @@
         styleElement.textContent = generateUniqueStyles(uniqueClass, style);
     }
 
-    // УНИФИЦИРОВАННЫЕ CSS-ПЕРЕМЕННЫЕ (как у других виджетов)
+
     function generateUniqueStyles(uniqueClass, style) {
         const s = style;
         const colors = s.colors || {};
@@ -655,7 +652,6 @@
         `;
     }
 
-    // БЕЗОПАСНОЕ ОТОБРАЖЕНИЕ ИКОНОК (как в других виджетах)
     function renderIcon(config) {
         // Приоритет: iconHtml > icon > дефолт
         if (config.iconHtml && config.iconHtml.trim()) {
