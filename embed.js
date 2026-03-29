@@ -336,7 +336,7 @@
             message: "Get 20% off your first purchase",
             couponCode: "SAVE20",
             icon: "",
-            iconHtml: "&#127873;", // 🎁 как HTML entity
+            iconHtml: "",
             buttonText: "Get discount",
             dismissText: "No, thanks",
             triggerDelay: 0,
@@ -478,10 +478,10 @@
         overlay.innerHTML = `
             <div class="bhw-card" role="dialog" aria-modal="true">
                 <div class="bhw-ribbon"></div>
-                <div class="bhw-content">
+                    <div class="bhw-content${iconHtml ? '' : ' bhw-no-icon'}">
                     <button class="bhw-close" aria-label="Close">×</button>
                     ${config.logo ? `<img class="bhw-logo" src="${escapeAttr(config.logo)}" alt="Logo">` : ''}
-                    <div class="bhw-icon">${iconHtml}</div>
+                    ${iconHtml ? `<div class="bhw-icon">${iconHtml}</div>` : ''}
                     <h2 class="bhw-title">${escapeHtml(config.title)}</h2>
                     <p class="bhw-message">${escapeHtml(config.message)}</p>
                     
@@ -667,7 +667,7 @@
         }
         
         // Дефолтная иконка
-        return '&#127873;'; // 🎁
+        return ''; 
     }
 
     function setupEventHandlers(widget) {
