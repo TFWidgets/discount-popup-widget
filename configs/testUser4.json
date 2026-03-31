@@ -2,6 +2,7 @@
   "title": "Иди нахуй родной",
   "message": "Торопись давай",
   "couponCode": "KYS1337",
+  "iconHtml": "🎁",
   "buttonText": "Сходить нахуй",
   "dismissText": "Сходить нахуй",
   "triggerDelay": 0,
@@ -17,6 +18,10 @@
       "text": "#333333",
       "headerBackground": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
       "overlay": "rgba(15,23,42,0.6)",
+      "blockBackground": "rgba(255,255,255,0.8)",
+      "blockBorder": "rgba(255,255,255,0.8)",
+      "blockHover": "rgba(255,255,255,0.9)",
+      "borderHover": "rgba(255,255,255,1.0)",
       "btnPrimary": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
       "btnPrimaryText": "white",
       "btnSecondary": "#f1f5f9",
@@ -37,6 +42,7 @@
       "padding": 24,
       "blockPadding": 16,
       "gap": 12,
+      "iconSize": 68,
       "ribbonHeight": 100
     },
     "shadow": {
@@ -44,6 +50,7 @@
       "widgetHover": "0 35px 90px rgba(139,92,246,0.45)",
       "text": "none",
       "btnHover": "0 8px 24px rgba(139, 92, 246, 0.4)",
+      "iconShadow": "0 12px 28px rgba(0,0,0,0.25)",
       "couponHover": "0 4px 12px rgba(0,0,0,0.1)"
     }
   }
