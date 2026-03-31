@@ -430,7 +430,7 @@
     async function loadConfig(clientId, baseUrl) {
         // Локальный конфиг для разработки
         if (clientId === 'local') {
-            const localScript = document.querySelector('#bhw-discount-local-config');
+const localScript = document.querySelector('#bhw-discount-local-config, #dpw-local-config');
             if (!localScript) {
                 throw new Error('Локальный конфиг не найден (#bhw-discount-local-config)');
             }
