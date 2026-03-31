@@ -48,63 +48,70 @@
     </div>
 
     <!-- Exit Intent Popup -->
-    <script id="dpw-local-config" type="application/json">
-    {
-      "title": "Wait! Don't leave!",
-      "message": "Get 25% off before you go",
-      "couponCode": "STAY25",
-      "iconHtml": "&#128683;",
-      "buttonText": "Get discount",
-      "dismissText": "No thanks",
-      "showOnExit": true,
-      "triggerDelay": 0,
-      "showOnScroll": 0,
-      "frequency": "always",
-      "style": {
-        "colors": {
-          "headerBackground": "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
-          "btnPrimary": "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
-        }
-      }
+<!-- Exit Intent Popup -->
+<script id="bhw-discount-local-config" type="application/json">
+{
+  "title": "Wait! Don't leave!",
+  "message": "Get 25% off before you go",
+  "couponCode": "STAY25",
+  "iconHtml": "&#128683;",
+  "buttonText": "Get discount",
+  "dismissText": "No thanks",
+  "showOnExit": true,
+  "triggerDelay": 0,
+  "showOnScroll": 0,
+  "frequency": "always",
+  "style": {
+    "colors": {
+      "headerBackground": "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+      "btnPrimary": "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
     }
-    </script>
-    <script src="./embed.js" data-id="local"></script>
+  }
+}
+</script>
+<script src="./embed.js" data-id="local"></script>
 
-    <script>
-        // Показать попап вручную
-        function showPopup() {
-            if (window.DiscountPopups && window.DiscountPopups.local) {
-                window.DiscountPopups.local.show();
-                console.log('✅ Попап показан вручную');
-            }
+<script>
+    function getPopup() {
+        return window.BusinessHoursWidgets?.discountPopups?.local;
+    }
+
+    function showPopup() {
+        const popup = getPopup();
+        if (popup) {
+            popup.show();
+            console.log('✅ Попап показан вручную');
+        } else {
+            console.log('❌ Попап не найден');
         }
+    }
 
-        // Симулировать exit-intent событие
-        function simulateExit() {
-            document.dispatchEvent(new MouseEvent('mouseleave', {
-                clientY: -10,
-                clientX: 100
-            }));
-            console.log('🚪 Exit-intent событие симулировано');
+    function simulateExit() {
+        document.dispatchEvent(new MouseEvent('mouseleave', {
+            clientY: -10,
+            clientX: 100
+        }));
+        console.log('🚪 Exit-intent событие симулировано');
+    }
+
+    function resetTrigger() {
+        sessionStorage.removeItem('bhw-discount-shown-local');
+        localStorage.removeItem('bhw-discount-lastShown-local');
+        location.reload();
+    }
+
+    setTimeout(() => {
+        console.log('📋 Доступные попапы:', window.BusinessHoursWidgets?.discountPopups || {});
+        const popup = getPopup();
+        if (popup) {
+            console.log('⚙️ Конфиг exit-intent:', {
+                showOnExit: popup.config.showOnExit,
+                frequency: popup.config.frequency
+            });
         }
+    }, 1000);
+</script>
 
-        // Сбросить триггер для повторного тестирования
-        function resetTrigger() {
-            sessionStorage.clear();
-            localStorage.clear();
-            console.log('🔄 Триггеры сброшены');
-        }
 
-        // Логирование для отладки
-        setTimeout(() => {
-            console.log('📋 Доступные попапы:', Object.keys(window.DiscountPopups || {}));
-            if (window.DiscountPopups?.local) {
-                console.log('⚙️ Конфиг exit-intent:', {
-                    showOnExit: window.DiscountPopups.local.config.showOnExit,
-                    frequency: window.DiscountPopups.local.config.frequency
-                });
-            }
-        }, 1000);
-    </script>
 </body>
 </html>
