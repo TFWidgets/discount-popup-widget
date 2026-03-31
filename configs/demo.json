@@ -2,7 +2,10 @@
   "title": "Don't leave!",
   "message": "Get 20% off your first purchase",
   "couponCode": "SAVE20",
-  "iconHtml": "🎁",
+  "icon": {
+    "type": "preset",
+    "value": "gift"
+  },
   "buttonText": "Get discount",
   "dismissText": "No, thanks",
   "triggerDelay": 0,
