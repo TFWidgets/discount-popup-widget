@@ -77,9 +77,27 @@
             background: rgba(0,0,0,0.15);
             transform: scale(1.1);
         }
-            
+        
+        .bhw-icon {
+            position: absolute;
+            top: var(--bhw-icon-top, -36px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bhw-icon-bg, #fff);
+            width: var(--bhw-icon-size, 68px);
+            height: var(--bhw-icon-size, 68px);
+            border-radius: var(--bhw-block-radius, 18px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--bhw-icon-font-size, 32px);
+            box-shadow: var(--bhw-icon-shadow, 0 12px 28px rgba(0,0,0,0.25));
+            border: var(--bhw-block-border, 3px solid rgba(255,255,255,0.8));
+            animation: bhw-bounce var(--bhw-bounce-duration, 2.5s) ease-in-out infinite;
+        }
+        
         .bhw-title {
-            margin: var(--bhw-title-margin, 8px 0 8px 0);
+            margin: var(--bhw-title-margin, 24px 0 8px 0);
             font-size: var(--bhw-title-size, 1.6em);
             font-weight: var(--bhw-title-weight, 800);
             letter-spacing: var(--bhw-title-spacing, -0.3px);
@@ -217,6 +235,11 @@
             margin: 0 auto 15px;
         }
         
+        @keyframes bhw-bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-6px); }
+        }
+        
         @keyframes bhw-spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -312,6 +335,8 @@
             title: "Don't leave!",
             message: "Get 20% off your first purchase",
             couponCode: "SAVE20",
+            icon: "",
+            iconHtml: "&#127873;", // 🎁 как HTML entity
             buttonText: "Get discount",
             dismissText: "No, thanks",
             triggerDelay: 0,
@@ -329,6 +354,8 @@
                     overlay: "rgba(15,23,42,0.6)",
                     blockBackground: "rgba(255,255,255,0.8)",
                     blockBorder: "rgba(255,255,255,0.8)",
+                    blockHover: "rgba(255,255,255,0.9)",
+                    borderHover: "rgba(255,255,255,1.0)",
                     btnPrimary: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
                     btnPrimaryText: "white",
                     btnSecondary: "#f1f5f9",
@@ -349,6 +376,7 @@
                     padding: 24,
                     blockPadding: 16,
                     gap: 12,
+                    iconSize: 68,
                     ribbonHeight: 100
                 },
                 shadow: {
@@ -356,6 +384,7 @@
                     widgetHover: "0 35px 90px rgba(0,0,0,0.45)",
                     text: "none",
                     btnHover: "0 8px 24px rgba(139, 92, 246, 0.4)",
+                    iconShadow: "0 12px 28px rgba(0,0,0,0.25)",
                     couponHover: "0 4px 12px rgba(0,0,0,0.1)"
                 }
             }
@@ -442,13 +471,17 @@
         // Применяем кастомные стили
         applyCustomStyles(uniqueClass, config.style);
 
+        // Безопасное отображение иконки
+        const iconHtml = renderIcon(config);
+
         // HTML структура
         overlay.innerHTML = `
             <div class="bhw-card" role="dialog" aria-modal="true">
                 <div class="bhw-ribbon"></div>
-                    <div class="bhw-content${iconHtml ? '' : ' bhw-no-icon'}">
+                <div class="bhw-content">
                     <button class="bhw-close" aria-label="Close">×</button>
                     ${config.logo ? `<img class="bhw-logo" src="${escapeAttr(config.logo)}" alt="Logo">` : ''}
+                    <div class="bhw-icon">${iconHtml}</div>
                     <h2 class="bhw-title">${escapeHtml(config.title)}</h2>
                     <p class="bhw-message">${escapeHtml(config.message)}</p>
                     
@@ -564,11 +597,19 @@
                 --bhw-shadow-hover: ${shadow.widgetHover || "0 35px 90px rgba(0,0,0,0.45)"};
                 --bhw-text-shadow: ${shadow.text || "none"};
                 --bhw-ribbon-height: ${sizes.ribbonHeight || 100}px;
+                --bhw-icon-size: ${sizes.iconSize || 68}px;
+                --bhw-icon-font-size: ${Math.round((sizes.iconSize || 68) * 0.47)}px;
+                --bhw-icon-top: ${Math.round((sizes.iconSize || 68) * -0.53)}px;
+                --bhw-icon-bg: ${colors.blockBackground || "rgba(255,255,255,0.8)"};
+                --bhw-block-border: ${sizes.iconSize >= 60 ? 3 : 2}px solid ${colors.blockBorder || "rgba(255,255,255,0.8)"};
+                --bhw-block-radius: ${borderRadius.blocks || 12}px;
+                --bhw-icon-shadow: ${shadow.iconShadow || "0 12px 28px rgba(0,0,0,0.25)"};
+                --bhw-bounce-duration: 2.5s;
                 --bhw-title-size: ${1.6 * fs}em;
                 --bhw-title-size-mobile: ${1.4 * fs}em;
                 --bhw-title-weight: 800;
                 --bhw-title-spacing: -0.3px;
-                --bhw-title-margin: 8px 0 8px 0;
+                --bhw-title-margin: ${Math.round(24 * fs)}px 0 8px 0;
                 --bhw-subtitle-size: ${1.05 * fs}em;
                 --bhw-subtitle-size-mobile: ${1.0 * fs}em;
                 --bhw-subtitle-opacity: 0.85;
@@ -608,6 +649,25 @@
                 --bhw-logo-width: 140px;
             }
         `;
+    }
+
+    function renderIcon(config) {
+        // Приоритет: iconHtml > icon > дефолт
+        if (config.iconHtml && config.iconHtml.trim()) {
+            // Если это HTML entity или простой HTML - вставляем как есть
+            if (config.iconHtml.includes('&') || config.iconHtml.includes('<')) {
+                return config.iconHtml;
+            }
+            // Если это эмодзи - экранируем
+            return escapeHtml(config.iconHtml);
+        }
+        
+        if (config.icon && config.icon.trim()) {
+            return escapeHtml(config.icon);
+        }
+        
+        // Дефолтная иконка
+        return '&#127873;'; // 🎁
     }
 
     function setupEventHandlers(widget) {
