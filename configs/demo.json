@@ -9,7 +9,7 @@
   "buttonText": "Get discount",
   "dismissText": "No, thanks",
   "triggerDelay": 0,
-  "showOnExit": false,
+  "showOnExit": true,
   "showOnScroll": 0,
   "frequency": "session",
   "logo": "",
