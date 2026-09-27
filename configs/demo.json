@@ -1,60 +1,41 @@
 {
-  "title": "Don't leave!",
-  "message": "Get 20% off your first purchase",
+  "active": true,
+  "domains": ["tf-widgets.com", "*.tf-widgets.com"],
+  "layout": "modal",
+  "eyebrow": "Welcome offer",
+  "offer": "20% OFF",
+  "title": "Your first order",
+  "message": "Use this code at checkout. It works on everything in the store.",
   "couponCode": "SAVE20",
-  "icon": {
-    "type": "preset",
-    "value": "gift"
-  },
-  "buttonText": "Get discount",
+  "couponLabel": "Your code",
+  "buttonText": "Copy code & shop",
+  "buttonUrl": "",
   "dismissText": "No, thanks",
-  "triggerDelay": 0,
+  "finePrint": "",
+  "icon": { "type": "none", "value": "" },
+  "teaser": { "enabled": true, "text": "Get 20% off", "position": "left" },
+  "triggerDelay": 5000,
   "showOnExit": true,
   "showOnScroll": 0,
+  "mobileExitFallback": true,
   "frequency": "session",
-  "logo": "",
   "style": {
-    "fontFamily": "'Inter', system-ui, sans-serif",
-    "valueFontFamily": "'JetBrains Mono', 'SF Mono', monospace",
+    "fontFamily": "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "overlayBlur": 6,
     "colors": {
       "background": "#ffffff",
-      "text": "#333333",
-      "headerBackground": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-      "overlay": "rgba(15,23,42,0.6)",
-      "blockBackground": "rgba(255,255,255,0.8)",
-      "blockBorder": "rgba(255,255,255,0.8)",
-      "blockHover": "rgba(255,255,255,0.9)",
-      "borderHover": "rgba(255,255,255,1.0)",
-      "btnPrimary": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-      "btnPrimaryText": "white",
-      "btnSecondary": "#f1f5f9",
-      "btnSecondaryText": "#333333",
-      "btnSecondaryHover": "#e2e8f0",
-      "couponBg": "#fff3cd",
-      "couponBorder": "#f59e0b",
-      "couponText": "#7c2d12",
-      "couponCopiedBg": "#d1fae5",
-      "couponCopiedBorder": "#10b981"
+      "text": "#111111",
+      "accent": "#ff5a36",
+      "overlay": "rgba(10, 10, 12, 0.55)",
+      "border": "rgba(0, 0, 0, 0.06)",
+      "btnPrimary": "#ff5a36",
+      "btnPrimaryText": "#ffffff",
+      "btnSecondaryText": "#111111",
+      "couponBg": "#fff4ef",
+      "couponBorder": "#ff5a36",
+      "couponText": "#7a2513"
     },
-    "borderRadius": {
-      "widget": 18,
-      "blocks": 12
-    },
-    "sizes": {
-      "fontSize": 1,
-      "padding": 24,
-      "blockPadding": 16,
-      "gap": 12,
-      "iconSize": 68,
-      "ribbonHeight": 100
-    },
-    "shadow": {
-      "widget": "0 25px 70px rgba(139,92,246,0.35)",
-      "widgetHover": "0 35px 90px rgba(139,92,246,0.45)",
-      "text": "none",
-      "btnHover": "0 8px 24px rgba(139, 92, 246, 0.4)",
-      "iconShadow": "0 12px 28px rgba(0,0,0,0.25)",
-      "couponHover": "0 4px 12px rgba(0,0,0,0.1)"
-    }
+    "borderRadius": { "widget": 22, "blocks": 14 },
+    "sizes": { "fontSize": 1, "width": 440 }
   }
 }
